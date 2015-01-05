@@ -381,6 +381,7 @@ fn compile_custom_old(pkg: &Package, cmd: &str,
                      .env("DEBUG", Some(profile.get_debug().to_string()))
                      .env("OPT_LEVEL", Some(profile.get_opt_level().to_string()))
                      .env("LTO", Some(profile.get_lto().to_string()))
+                     .env("LANDING_PADS", Some(profile.get_landing_pads().to_string()))
                      .env("PROFILE", Some(profile.get_env()));
     for arg in cmd {
         p = p.arg(arg);
@@ -658,6 +659,10 @@ fn build_base_args(cx: &Context,
             Some(n) => cmd = cmd.arg("-C").arg(format!("codegen-units={}", n)),
             None => {},
         }
+    }
+
+    if !profile.get_landing_pads() {
+        cmd = cmd.args(&["-Z", "no-landing-pads"]);
     }
 
     if profile.get_debug() {

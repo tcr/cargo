@@ -128,6 +128,7 @@ pub struct Profile {
     env: String, // compile, test, dev, bench, etc.
     opt_level: uint,
     lto: bool,
+    landing_pads: bool,
     codegen_units: Option<uint>,    // None = use rustc default
     debug: bool,
     rpath: bool,
@@ -146,6 +147,7 @@ impl Profile {
             env: String::new(),
             opt_level: 0,
             lto: false,
+            landing_pads: true,
             codegen_units: None,
             debug: false,
             rpath: false,
@@ -243,6 +245,10 @@ impl Profile {
         self.lto
     }
 
+    pub fn get_landing_pads(&self) -> bool {
+        self.landing_pads
+    }
+
     pub fn get_codegen_units(&self) -> Option<uint> {
         self.codegen_units
     }
@@ -270,6 +276,11 @@ impl Profile {
 
     pub fn lto(mut self, lto: bool) -> Profile {
         self.lto = lto;
+        self
+    }
+
+    pub fn landing_pads(mut self, landing_pads: bool) -> Profile {
+        self.landing_pads = landing_pads;
         self
     }
 
@@ -328,6 +339,7 @@ impl<H: hash::Writer> hash::Hash<H> for Profile {
         let Profile {
             opt_level,
             lto,
+            landing_pads,
             codegen_units,
             debug,
             rpath,
@@ -345,7 +357,7 @@ impl<H: hash::Writer> hash::Hash<H> for Profile {
 
             custom_build: _,
         } = *self;
-        (opt_level, lto, codegen_units, debug,
+        (opt_level, lto, landing_pads, codegen_units, debug,
          rpath, for_host, dest, harness).hash(into)
     }
 }
